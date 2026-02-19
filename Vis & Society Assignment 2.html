@@ -1,0 +1,210 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<title>Vis & Society Assignment 2</title>
+	<link rel="stylesheet" href="https://vis-society.github.io/assignments/report.css" />
+</head>
+
+<body>
+	<header>
+		<h1>
+			<small>Assignment 2</small>
+			Exploratory Data Analysis
+		</h1>
+
+		<p>
+			<strong>Tiger Chaisutyakorn</strong> — <em>tigercha@mit.edu</em>
+		</p>
+	</header>
+	<main>
+		<section>
+			<h2>Transit-oriented development (TOD)</h2>
+			<h3>Dataset</h3>
+			<p>
+				This analysis uses a dataset of residential sales in Boston, MA during period 2000-2023. 
+				The dataset contains 49,301 records of housing sales.
+				The data includes information regarding the house such as price, size, number of rooms, location (in latitude and longitude).
+				It also contains information regarding the nature of the sales such as the date of the sales, sale price, buyer and seller information.
+			</p>
+			<p>
+				Another source of data is the public transit station data, which contains the location of each train and bus station.
+				The data is provided by MBTA General Transit Feed Specification (GTFS) feed. The limitations is that this data does not contain information regarding the timing of the station opening.
+			</p>
+
+
+			<h3>Overall Analysis Questions</h3>
+			<ol>
+				<li>How does the distance to nearest train station affect housing price?</li>
+				<li>Is the difference in price and distance to train station consistent across zip codes?</li>
+				<li>Is the effect differ after adjusting for other factors?</li>
+			</ol>
+		</section>
+
+		<section>
+			<h2>Discoveries & Insights</h2>
+			
+			<figure>
+				<img src="plots/plot2.png" alt="" width="600"/>
+				<figcaption>
+				Density Map of Available Housing Sales Data with Public Transit Station
+				</figcaption>
+			</figure>
+			<p>
+				In first visualization, I want to check the distribution of the available data.
+				The density is denser in the central area of the city. With very sparse data in the outer areas.
+				This might cause the missing data in further analysis.
+			</p>
+			<p>
+				The public transit stations including train and bus stops are overlaid on the density map. 
+				The green points represent the bus stations, and the orange points represent the train stations.
+				As expected, there are more bus stations than the train stations.
+				The stations are more concentrated in the central area of the city, which is also the area with higher density of housing sales data.
+			</p>
+
+			<figure>
+				<img src="plot3.png" alt="" width="800"/>
+				<figcaption>
+				Price Map of Boston Housing Sales
+				</figcaption>
+			</figure>
+			<p>
+				The map showing price of each housing. The size of the circle represents the price of the housing. The larger the circle, the higher the price.
+				The green and orange points represent the station as in the previous figure. Some housings with higher price are closer to the stations,
+				but still no directly identifiable trend.
+			</p>
+
+			<figure>
+				<img src="plots/plot4_price_vs_train_distance.png" alt="" width="800"/>
+				<figcaption>
+					Price and Distance to the Nearest Train Station
+				</figcaption>	
+			</figure>
+			<p>
+				The scatter plot showing the relationship between housing price and distance to the nearest train station. 
+				The distance is calculated by latitude and longitude values of the housing and the train station.
+			</p>
+			<p>	
+				Filters are applied to the data to remove the outliers in the price and distance. (Distance less than 5000m and price more than 30 million) 
+			</p>
+				The figure shows a negative correlation between the distance to the nearest train station and the housing price. There is no difference in distribution for each zip code.
+			</p>
+			
+
+			<figure>
+				<img src="plots/plot5_price_vs_train_distance_by_zip.png" alt="" />
+				<figcaption>
+					Price and Distance to the Nearest Train Station, Separate by Zip code
+				</figcaption>
+			</figure>
+			<p>
+			This plot is an extension from the figure 4, but separate into each zip code. 
+			The intuition behind this is to reduce the effect from price difference across the zip codes.
+			The zip codes were filtered based on the top-6 highest available sale records count.
+			</p>
+			<p>
+			Even after separating the data into each zip code, we still cannot see a clear correlation between the distance to the nearest train station and the housing price.
+			We can observe missing data pattern in zip code 02115 and 02116. This can be explained by the commercial area in the city, causing uncontinuous distribution.
+			</p>
+
+			<figure>
+				<img src="plots/plot6_price_vs_train_distance_box.png" alt="" />
+				<figcaption>
+					Box Plot of Price with Distance to the Nearest Train Station Grouped into bins
+				</figcaption>
+			</figure>
+			<p>
+				The box plot splits data into 4 bins based on the distance to the nearest train station.
+				This shows direct comparison of the price distribution. 
+				We can see that the price ranges got narrower as the distance to the nearest train station increases, but the median price is similar across all bins.
+				This signifies that the high price housing are more likely to be located closer to the train station.
+			</p>
+
+			<h3>Walking Distance Analysis</h3>
+
+			<p>
+				We don't see strong relationship in from the distance to the nearest train station by latitude and longitude calculation.
+				But the distance calculated by latitude and longitude might not be the actual distance that people have to walk to get to the station.
+			</p>
+			<p>
+				Therefore, I calculated the walking distance from each housing to the nearest train station by using open source routing machine (OSRM) API.
+				(Accessbile: https://project-osrm.org/) The API takes the latitude and longitude of the housing and the station, and returns the walking distance in meters.
+				The walking distance is more accurate representation of the actual distance that people have to walk to get
+				to the station, which can be affected by the street network and the physical barriers in the city.
+			</p>
+
+			<figure>
+				<img src="plots/plot6_price_vs_train_walking_distance.png" alt="" width="800"/>
+				<figcaption>
+				Price vs. Walking Distance to the Nearest Train Station
+				</figcaption>
+			</figure>
+			<p>
+				In this figure, we can see more variation in the walking distance compare to the distance calculated by latitude and longitude.
+				However, we still cannot see a clear correlation between the walking distance to the nearest train station and the housing price.
+				The distribution of the price is similar across different walking distance.
+			</p>
+
+			<figure>
+				<img src="plots/plot7_price_vs_train_walking_distance_by_zip.png" alt="" />
+				<figcaption>
+				Price vs. Walking Distance to the Nearest Train Station, Separate by Zip code
+				</figcaption>
+			</figure>
+			<p>
+				Separating the data into each zip code, we still see the same distribution as we seen in the previous distance plot.
+				The scale of X spreads out wider because the walking distance will always be greater than the direct distance calculated by latitude and longitude. But the price distribution is still similar across different walking distance.
+			</p>
+
+			<figure>
+				<img src="plots/plot8_price_distance_comparison.png" alt="" />
+				<figcaption>
+					Characteristics of the Houses with Similar Price but Different Walking Distance to the Nearest Train Station
+				</figcaption>
+			</figure>
+
+			<p>
+				From our previous result, the walking distance to the nearest train station does not correlate well with the housing price.
+				This means that there are some houses with similar price but different walking distance to the nearest train station.
+				There must be other factors that affect the housing price more than the walking distance to the nearest train station.
+			</p>
+
+			<p>
+				In this figure, each row represents a house with similar price. 
+				Each columns represents different characteristics of the house. (number of bathrooms, number of bedrooms, living area, lot area, and number of restrooms respectively)
+				We can observe the general trend that at the same price range, number of rooms increase when the house is furhter from the train station.
+				And we see the opposite trend for the living area and lot size, which is larger when the house is closer.
+				This is not expected as the house with larger living area and lot size should be more expensive.
+			</p>
+
+		</section>
+
+		<section>
+			<h2>Summary</h2>
+
+			<p>
+				This exploratory data analysis explored whether the housing sale price is correlated with the distance from the public transit stations or not.
+				The distance is calculated by two methods: the direct distance by latitude and longitude, and the walking distance by using OSRM API.
+			</p>
+			<p>
+				The result shows that there is no clear correlation between the distance to the nearest train station and the housing price. 
+				Even when we separate the data into each zip code, we still cannot see a clear correlation. 
+				We also see that there are some houses with similar price but different walking distance to the nearest train station. 
+				We can observe that the houses with similar price but further from the train station tend to have more rooms but smaller living area and lot size.
+			</p>
+
+			<p>
+				The relationship between the distance and the house area is unexpected. At the similar price range, 
+				I expected the house that is closer to the station to be smaller than the house that is further from the station.
+				This required further analysis to understand the factors related to this relationship.
+			</p>
+
+			<h2>References</h2>
+			<ol>
+				<li>Massachusetts Bay Transportation Authority (MBTA). GTFS [Internet]. Boston (MA): Massachusetts Bay Transportation Authority; [cited 2026 Feb 17]. Available from: https://www.mbta.com/developers/gtfs</li>
+				<li>Open Source Routing Machine (OSRM) Project. Project OSRM [Internet]. Open Source Routing Machine (OSRM) Project;[cited 2026 Feb 18]. Available from: https://project-osrm.org/</li>
+			</ol>
+
+		</section>
+	</main>
+</body>
+</html>
